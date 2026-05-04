@@ -5,7 +5,9 @@
 	import CoverArt from '../CoverArt.svelte';
 
 	const { item }: ContentComponentProps = $props();
-	const listens = $derived(await recentListens(item.cardData.username));
+	const listens = $derived(
+		item.cardData.username ? await recentListens(item.cardData.username) : []
+	);
 </script>
 
 <div class="z-10 flex h-full w-full flex-col gap-3 overflow-y-scroll p-4">

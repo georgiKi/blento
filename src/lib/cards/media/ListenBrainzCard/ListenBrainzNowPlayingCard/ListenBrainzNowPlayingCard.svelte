@@ -4,7 +4,9 @@
 	import type { Listen } from '../types.ts';
 
 	const { item }: ContentComponentProps = $props();
-	const playing = $derived(await nowPlaying(item.cardData.username));
+	const playing = $derived(
+		item.cardData.username ? await nowPlaying(item.cardData.username) : null
+	);
 
 	function getCoverArtUrl(listen: Listen): string | undefined {
 		const releaseMbid = listen.track_metadata?.additional_info?.release_mbid;
