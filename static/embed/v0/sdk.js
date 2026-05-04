@@ -14,8 +14,9 @@
  *   { v: 0, id, type: 'deleteRecord', payload: { collection, rkey } }
  *   { v: 0, id, type: 'applyWrites',  payload: { writes, validate? } }
  *   { v: 0, id, type: 'uploadBlob',   payload: { bytes: number[], mimeType } }
- *   { v: 0,     type: 'blento:resize',   heightPx }
- *   { v: 0,     type: 'blento:navigate', url }
+ *   { v: 0,     type: 'blento:resize',      heightPx }
+ *   { v: 0,     type: 'blento:navigate',    url }
+ *   { v: 0,     type: 'blento:promptLogin' }
  *
  * ─── Wire protocol (parent → iframe) ─────────────────────────────────────────
  *   { v: 0, type: 'ready', session }                      // sent once after handshake
@@ -202,6 +203,9 @@
 		},
 		notifyNavigate: function (url) {
 			sendToParent({ v: PROTOCOL_VERSION, type: 'blento:navigate', url: url });
+		},
+		promptLogin: function () {
+			sendToParent({ v: PROTOCOL_VERSION, type: 'blento:promptLogin' });
 		}
 	};
 
