@@ -3,6 +3,7 @@
 	import { browser } from '$app/environment';
 	import { page } from '$app/state';
 	import { user } from '$lib/atproto';
+	import { atProtoLoginModalState } from '$lib/atproto/LoginModal.svelte';
 	import {
 		embedApplyWrites,
 		embedCreateRecord,
@@ -198,6 +199,11 @@
 			} catch {
 				/* ignore malformed URLs */
 			}
+			return;
+		}
+
+		if (data.type === 'blento:promptLogin') {
+			atProtoLoginModalState.show();
 			return;
 		}
 

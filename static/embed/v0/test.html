@@ -130,6 +130,7 @@
 		<div class="row">
 			<button id="btn-resize">notifyResize(800)</button>
 			<button id="btn-navigate">notifyNavigate('/')</button>
+			<button id="btn-prompt-login">promptLogin()</button>
 		</div>
 
 		<div class="field">
@@ -247,6 +248,11 @@
 			$('btn-navigate').onclick = () => {
 				window.Blento.notifyNavigate('/');
 				show('notifyNavigate(/) sent', null);
+			};
+
+			$('btn-prompt-login').onclick = () => {
+				window.Blento.promptLogin();
+				show('promptLogin() sent', null);
 			};
 
 			if (window.Blento.getTheme().dark) {
