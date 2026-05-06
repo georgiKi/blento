@@ -41,6 +41,12 @@ export const ListenBrainzNowPlayingCardDefinition = {
 		}
 		return allData;
 	},
+	migrate: (item) => {
+		if (!item.cardData.username && item.cardData.listenbrainzUsername) {
+			item.cardData.username = item.cardData.listenbrainzUsername;
+			delete item.cardData.listenbrainzUsername;
+		}
+	},
 	urlHandlerPriority: 5,
 	minW: 2,
 	minH: 2,

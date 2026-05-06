@@ -1,28 +1,34 @@
 # Contributing Guidelines
 
-For creating new cards see [here](CustomCards.md) (and check out [existing card ideas](CardIdeas.md))
+For new cards see [CustomCards](CustomCards.md) and [CardIdeas](CardIdeas.md).
 
-## Development
+## Setup
 
-```
+```sh
 git clone https://github.com/flo-bit/blento.git
 cd blento
-cp .env.example .env
 pnpm install
-pnpm run dev
+pnpm dev
 ```
 
-## AI assisted development
+No `.env` file required — dev uses the loopback OAuth public client, a fallback cookie secret, and `blento.app` as the default handle for `/`.
 
-You can submit PRs written with AI assistance but please make sure:
+Note: if cloudflare authorization website opens when running `pnpm dev` flip the `DB` binding's `"remote": true` to `false` in `wrangler.jsonc` and re-run.
 
-- there's no extra unnecessary changes/unnecessary verbose code (keep it simple)
-- you test everything yourself
-  - in light/dark mode
-  - with and without colored cards
-  - in edit mode and not in edit mode
-  - on mobile and desktop (note that there's two different mobile "modes", one dependent on screen size and one enabled when pointer: coarse)
+Individual `/handle` pages load directly from each user's PDS — no backfill needed.
+
+## Before opening a PR
+
+- `pnpm check` — must complete with 0 errors and 0 warnings (existing baseline excepted).
+- `pnpm format` — runs eslint --fix + prettier --write across the project.
 
 ## Subpages
 
-currently subpages exist but are not used yet, they are perfect for testing things though (as otherwise your profile on blento.app will show e.g. cards that dont exist on the deployed version yet), in the development verion go to `/your.handle/{pagename}/edit` to edit a subpage (where pagename can be any string that is not "edit" or "api") (note that currently when you login you always get redirected to your main page)
+In-progress changes go on a subpage so your live profile stays clean: `/your.handle/p/<page>/edit` (any `<page>` other than `edit` or `api`). Login redirects to the main page — navigate to the subpage URL manually.
+
+## AI-assisted PRs
+
+AI-assisted PRs are accepted, especially if you just create a new card, but please:
+
+- Keep diffs minimal; no unrelated cleanup or verbose code
+- Test light/dark, colored cards, edit/view, desktop and both mobile modes (screen-size and `pointer: coarse`)

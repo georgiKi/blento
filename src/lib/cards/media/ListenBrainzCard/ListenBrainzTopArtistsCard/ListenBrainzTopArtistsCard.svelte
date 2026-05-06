@@ -3,7 +3,7 @@
 	import { topArtists } from './artists.remote';
 
 	const { item }: ContentComponentProps = $props();
-	const artists = $derived(await topArtists(item.cardData.username));
+	const artists = $derived(item.cardData.username ? await topArtists(item.cardData.username) : []);
 </script>
 
 <div class="z-10 flex h-full w-full flex-col gap-3 overflow-y-scroll p-4">

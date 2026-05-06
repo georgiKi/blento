@@ -4,7 +4,9 @@
 	import CoverArt from '../CoverArt.svelte';
 
 	const { item }: ContentComponentProps = $props();
-	const recordings = $derived(await fetchListenBrainzTopSongs(item.cardData.username));
+	const recordings = $derived(
+		item.cardData.username ? await fetchListenBrainzTopSongs(item.cardData.username) : []
+	);
 </script>
 
 <div class="z-10 flex h-full w-full flex-col gap-3 overflow-y-scroll p-4">

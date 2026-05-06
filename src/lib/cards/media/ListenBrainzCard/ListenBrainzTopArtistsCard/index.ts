@@ -41,6 +41,12 @@ export const ListenBrainzTopArtistsCardDefinition = {
 		}
 		return allData;
 	},
+	migrate: (item) => {
+		if (!item.cardData.username && item.cardData.listenbrainzUsername) {
+			item.cardData.username = item.cardData.listenbrainzUsername;
+			delete item.cardData.listenbrainzUsername;
+		}
+	},
 	allowSetColor: true,
 	defaultColor: 'base',
 	minW: 2,

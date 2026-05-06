@@ -59,9 +59,9 @@
 	"d1_databases": [
 		{
 			"binding": "DB",
-			"database_name": "blento",
-			"database_id": "922639e7-6321-42c8-a4bd-cdf48428fdac",
-			"remote": true
+			"database_name": "blento-v3",
+			"database_id": "83e7be08-8503-4b54-9f73-0bac105761b5",
+			"remote": false
 		}
 	],
 	"analytics_engine_datasets": [
