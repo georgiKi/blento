@@ -10,3 +10,4 @@ export const [getAdditionalUserData, setAdditionalUserData] =
 export const [getIsCoarse, setIsCoarse] = createContext<() => boolean>();
 export const [getSelectedCardId, setSelectedCardId] = createContext<() => string | null>();
 export const [getSelectCard, setSelectCard] = createContext<(id: string | null) => void>();
+export const [getToggleCardSettings, setToggleCardSettings] = createContext<(id: string) => void>();

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { dev } from '$app/environment';
-	import { page } from '$app/state';
+	// import { page } from '$app/state';
 	import { logout, user } from '$lib/atproto';
 	import { getImage, getName } from '$lib/helper';
 	import type { WebsiteData } from '$lib/types';
@@ -21,24 +21,24 @@
 		save: () => Promise<void>;
 	} = $props();
 
-	function getPreviewUrl() {
-		const base = typeof window !== 'undefined' ? window.location.origin : '';
-		const pagePath =
-			data.page && data.page !== 'blento.self' ? `/p/${data.page.replace('blento.', '')}` : '';
+	// function getPreviewUrl() {
+	// 	const base = typeof window !== 'undefined' ? window.location.origin : '';
+	// 	const pagePath =
+	// 		data.page && data.page !== 'blento.self' ? `/p/${data.page.replace('blento.', '')}` : '';
 
-		if (page.data.customDomain) {
-			return `${base}${pagePath || '/'}`;
-		}
+	// 	if (page.data.customDomain) {
+	// 		return `${base}${pagePath || '/'}`;
+	// 	}
 
-		const handle = data.profile?.handle;
-		const actor = handle && handle !== 'handle.invalid' ? handle : data.did;
-		return `${base}/${actor}${pagePath}`;
-	}
+	// 	const handle = data.profile?.handle;
+	// 	const actor = handle && handle !== 'handle.invalid' ? handle : data.did;
+	// 	return `${base}/${actor}${pagePath}`;
+	// }
 
-	function openPreview() {
-		if (typeof window === 'undefined') return;
-		window.open(getPreviewUrl(), '_blank', 'noopener,noreferrer');
-	}
+	// function openPreview() {
+	// 	if (typeof window === 'undefined') return;
+	// 	window.open(getPreviewUrl(), '_blank', 'noopener,noreferrer');
+	// }
 
 	let avatarUrl = $derived(getImage(data.publication, data.did, 'icon') ?? data.profile.avatar);
 	let name = $derived(getName(data));
@@ -76,7 +76,7 @@
 			</span>
 		</div>
 		<div class="flex items-center gap-1">
-			<Button size="sm" variant="ghost" class="backdrop-blur-none" onclick={openPreview}>
+			<!-- <Button size="sm" variant="ghost" class="backdrop-blur-none" onclick={openPreview}>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 24 24"
@@ -91,7 +91,7 @@
 					<circle cx="12" cy="12" r="3" />
 				</svg>
 				<span class="hidden sm:inline">Preview</span>
-			</Button>
+			</Button> -->
 			<Toggle
 				class="hidden bg-transparent backdrop-blur-none lg:inline-flex dark:bg-transparent"
 				bind:pressed={showingMobileView}

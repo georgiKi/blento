@@ -99,8 +99,8 @@
 
 <aside
 	class={[
-		'bg-base-100 dark:bg-base-950 border-base-200 dark:border-base-800 fixed top-26 right-0 bottom-0 z-40 flex w-64 flex-col overflow-y-auto border-l transition-transform duration-200',
-		open ? 'translate-x-0' : 'translate-x-full'
+		'bg-base-100 dark:bg-base-950 border-base-200 dark:border-base-800 fixed top-13 bottom-0 left-0 z-40 flex w-64 flex-col overflow-y-auto border-r transition-transform duration-200',
+		open ? 'translate-x-0' : '-translate-x-full'
 	]}
 >
 	<div

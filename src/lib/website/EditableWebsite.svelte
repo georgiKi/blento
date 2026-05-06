@@ -20,20 +20,26 @@
 	import type { CardDefinition, CreationModalComponentProps } from '../cards/types';
 	import { dev } from '$app/environment';
 	import { env } from '$env/dynamic/public';
-	import { setIsCoarse, setIsMobile, setSelectedCardId, setSelectCard } from './context';
+	import {
+		setIsCoarse,
+		setIsMobile,
+		setSelectedCardId,
+		setSelectCard,
+		setToggleCardSettings
+	} from './context';
 	import Context from './Context.svelte';
 	import Head from './Head.svelte';
 	import SettingsOverlay from './settings/SettingsOverlay.svelte';
 	import CardSettingsSidebar from './CardSettingsSidebar.svelte';
 	import EditTopBar from './EditTopBar.svelte';
 	import MobileSelectionBar from './MobileSelectionBar.svelte';
-	import PageSwitcherBar from './PageSwitcherBar.svelte';
+	// import PageSwitcherBar from './PageSwitcherBar.svelte';
 	import SaveModal from './SaveModal.svelte';
 	import { user } from '$lib/atproto';
 	import * as TID from '@atcute/tid';
 	import { launchConfetti } from '@foxui/visual';
 
-	import SectionsSidebar from './SectionsSidebar.svelte';
+	// import SectionsSidebar from './SectionsSidebar.svelte';
 
 	import { createImageCard, createVideoCard } from './file-processing';
 	import CardCommand from '$lib/components/card-command/CardCommand.svelte';
@@ -137,6 +143,15 @@
 			cardSettingsOpen = false;
 		} else if (!isMobile) {
 			cardSettingsOpen = true;
+		}
+	});
+
+	setToggleCardSettings((id: string) => {
+		if (selectedCardId === id) {
+			selectedCardId = null;
+		} else {
+			selectedCardId = id;
+			if (!isMobile) cardSettingsOpen = true;
 		}
 	});
 
@@ -409,9 +424,9 @@
 
 <EditTopBar {data} bind:showingMobileView bind:isSaving {hasUnsavedChanges} {save} />
 
-<PageSwitcherBar {data} />
+<!-- <PageSwitcherBar {data} /> -->
 
-{#if sectionsEditingEnabled}
+<!-- {#if sectionsEditingEnabled}
 	<button
 		type="button"
 		class="bg-base-100 dark:bg-base-950 border-base-200 dark:border-base-800 text-base-600 dark:text-base-400 hover:text-base-800 dark:hover:text-base-200 fixed bottom-3 left-3 z-20 flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium shadow-md transition-colors"
@@ -445,7 +460,7 @@
 			<path d="m6 9 6 6 6-6" />
 		</svg>
 	</button>
-{/if}
+{/if} -->
 
 <SettingsOverlay bind:data publicationUrl={data.publication?.url} />
 
@@ -518,15 +533,15 @@
 		ondeselect={() => (selectedCardId = null)}
 	/>
 
-	{#if sectionsEditingEnabled}
+	<!-- {#if sectionsEditingEnabled}
 		<SectionsSidebar bind:open={showSectionsSidebar} bind:sections bind:activeSectionId bind:data />
-	{/if}
+	{/if} -->
 
 	<MobileWarningModal bind:showMobileWarning />
 
 	<div
 		class={[
-			'group/wrapper @container/wrapper relative w-full overflow-x-hidden pt-27',
+			'group/wrapper @container/wrapper relative w-full overflow-x-hidden pt-14',
 			showingMobileView
 				? 'bg-base-50 dark:bg-base-900 my-4 min-h-[calc(100dvh-2em)] overflow-hidden rounded-2xl lg:mx-auto lg:w-90'
 				: ''
@@ -540,7 +555,8 @@
 			class={[
 				'pointer-events-none relative mx-auto max-w-lg',
 				(!getHideProfileSection(data) && getProfilePosition(data) === 'side') ||
-				(showSectionsSidebar && getHideProfileSection(data))
+				(showSectionsSidebar && getHideProfileSection(data)) ||
+				cardSettingsOpen
 					? '@5xl/wrapper:grid @5xl/wrapper:max-w-7xl @5xl/wrapper:grid-cols-4'
 					: '@5xl/wrapper:max-w-4xl'
 			]}
@@ -594,8 +610,7 @@
 		<button
 			type="button"
 			onclick={() => requestAddCard()}
-			class="bg-accent-500 hover:bg-accent-600 focus-visible:outline-accent-500 fixed bottom-4 z-40 flex cursor-pointer items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white shadow-lg transition-[right] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2"
-			style="right: {cardSettingsOpen ? '17rem' : '1rem'}"
+			class="bg-accent-500 hover:bg-accent-600 focus-visible:outline-accent-500 fixed right-4 bottom-4 z-40 flex cursor-pointer items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2"
 			aria-label="Add card"
 		>
 			<svg
