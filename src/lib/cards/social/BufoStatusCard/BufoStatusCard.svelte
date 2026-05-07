@@ -41,30 +41,38 @@
 	}
 </script>
 
-<a
-	href={statusUrl ?? 'https://status.zzstoatzz.io'}
-	target="_blank"
-	rel="noopener noreferrer"
-	class="flex h-full w-full flex-col items-center justify-center gap-2 p-3 text-center"
->
-	{#if status}
-		{#if emojiName}
-			<img
-				src={`https://all-the.bufo.zone/${emojiName}.png`}
-				alt={emojiName}
-				onerror={onImgError}
-				class="max-h-16 w-auto object-contain"
-			/>
+<div class="relative flex h-full w-full flex-col items-center justify-center gap-2 p-3 text-center">
+	<a
+		href={statusUrl ?? 'https://status.zzstoatzz.io'}
+		target="_blank"
+		rel="noopener noreferrer"
+		class="flex flex-col items-center justify-center gap-2"
+	>
+		{#if status}
+			{#if emojiName}
+				<img
+					src={`https://all-the.bufo.zone/${emojiName}.png`}
+					alt={emojiName}
+					onerror={onImgError}
+					class="max-h-16 w-auto object-contain"
+				/>
+			{:else}
+				<span class="text-5xl leading-none">{status.emoji}</span>
+			{/if}
+			{#if status.text}
+				<p class="line-clamp-2 text-sm font-medium opacity-80">{status.text}</p>
+			{/if}
+		{:else if loaded}
+			<span class="text-sm opacity-40">No active status</span>
 		{:else}
-			<span class="text-5xl leading-none">{status.emoji}</span>
+			<span class="text-sm opacity-40">Loading…</span>
 		{/if}
-		{#if status.text}
-			<p class="line-clamp-2 text-sm font-medium opacity-80">{status.text}</p>
-		{/if}
-	{:else if loaded}
-		<span class="text-sm opacity-40">No active status</span>
-	{:else}
-		<span class="text-sm opacity-40">Loading…</span>
-	{/if}
-	<span class="absolute right-2 bottom-1.5 text-[10px] opacity-30">bufo status</span>
-</a>
+	</a>
+	<a
+		href="https://status.zzstoatzz.io"
+		target="_blank"
+		rel="noopener noreferrer"
+		class="absolute right-2 bottom-1.5 text-[10px] opacity-30 hover:opacity-60"
+		>powered by status.zzstoatzz.io</a
+	>
+</div>
