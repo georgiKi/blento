@@ -69,7 +69,9 @@
 	});
 
 	// Snapshot the original cards and sections so savePage can detect deletions.
+	// svelte-ignore state_referenced_locally
 	const originalCards: Item[] = structuredClone(data.cards);
+	// svelte-ignore state_referenced_locally
 	const originalSections: SectionRecord[] = structuredClone(data.sections);
 
 	// svelte-ignore state_referenced_locally

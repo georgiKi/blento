@@ -97,6 +97,23 @@
 		colorMode === 'custom' ? allColorChoices.find((c) => c.label === currentColor) : undefined
 	);
 
+	const sizeOptions = [
+		{ w: 2, h: 2, label: 'Small', preview: 'size-3' },
+		{ w: 4, h: 2, label: 'Wide', preview: 'h-3 w-6' },
+		{ w: 2, h: 4, label: 'Tall', preview: 'h-6 w-3' },
+		{ w: 4, h: 4, label: 'Large', preview: 'size-6' }
+	] as const;
+	const availableSizes = $derived(sizeOptions.filter((s) => canSetSize(s.w, s.h)));
+
+	function isCurrentSize(w: number, h: number) {
+		if (!item) return false;
+		const currentW = isMobile ? item.mobileW : item.w;
+		const currentH = isMobile ? item.mobileH : item.h;
+		const targetW = isMobile ? w * 2 : w;
+		const targetH = isMobile ? h * 2 : h;
+		return currentW === targetW && currentH === targetH;
+	}
+
 	type TabId = 'content' | 'design';
 	const allTabs: { id: TabId; label: string }[] = [
 		{ id: 'content', label: 'Content' },
@@ -167,20 +184,56 @@
 			{:else if activeTab === 'design'}
 				{#if cardDef.allowSetColor !== false}
 					<section class="flex flex-col gap-3">
-						<h3 class="text-base-500 dark:text-base-400 text-xs font-semibold uppercase">Color</h3>
-						<div class="flex flex-wrap gap-1.5">
+						<h3 class="text-base-500 dark:text-base-400 text-xs font-semibold uppercase">
+							Background color
+						</h3>
+						<div class="grid grid-cols-2 gap-2">
 							{#each colorModes as mode (mode)}
 								<button
 									type="button"
 									class={[
-										'cursor-pointer rounded-md border px-2.5 py-1 text-xs font-medium capitalize transition-colors',
+										'group flex cursor-pointer flex-col items-center gap-2 rounded-lg border p-3 transition-colors',
 										colorMode === mode
-											? 'border-accent-500 bg-accent-500/10 text-accent-600 dark:text-accent-400'
-											: 'border-base-200 dark:border-base-700 text-base-700 dark:text-base-300 hover:bg-base-100 dark:hover:bg-base-800'
+											? 'border-accent-500 bg-accent-500/10'
+											: 'border-base-200 dark:border-base-700 hover:bg-base-100 dark:hover:bg-base-800'
 									]}
 									onclick={() => setColorMode(mode)}
+									aria-pressed={colorMode === mode}
 								>
-									{mode}
+									<div class="flex h-8 items-center justify-center">
+										<span
+											class={[
+												'block size-7 overflow-hidden rounded-full ring-1 transition-colors',
+												colorMode === mode ? 'ring-accent-500' : 'ring-base-300 dark:ring-base-700'
+											]}
+											style={mode === 'transparent'
+												? 'background-image: linear-gradient(45deg, #cbd5e1 25%, transparent 25%, transparent 75%, #cbd5e1 75%), linear-gradient(45deg, #cbd5e1 25%, transparent 25%, transparent 75%, #cbd5e1 75%); background-size: 8px 8px; background-position: 0 0, 4px 4px;'
+												: undefined}
+										>
+											{#if mode === 'base'}
+												<span class="bg-base-300 dark:bg-base-700 block size-full"></span>
+											{:else if mode === 'accent'}
+												<span class="bg-accent-500 block size-full"></span>
+											{:else if mode === 'custom'}
+												{@const swatchColor =
+													colorMode === 'custom' ? currentColor : lastCustomColor}
+												<span
+													class="block size-full"
+													style={`background-color: var(--color-${swatchColor}-500)`}
+												></span>
+											{/if}
+										</span>
+									</div>
+									<span
+										class={[
+											'text-xs capitalize',
+											colorMode === mode
+												? 'text-accent-600 dark:text-accent-400 font-medium'
+												: 'text-base-600 dark:text-base-400'
+										]}
+									>
+										{mode}
+									</span>
 								</button>
 							{/each}
 						</div>
@@ -198,54 +251,47 @@
 					</section>
 				{/if}
 
-				{#if cardDef.canResize !== false}
+				{#if cardDef.canResize !== false && availableSizes.length > 1}
 					<section class="flex flex-col gap-3">
 						<h3 class="text-base-500 dark:text-base-400 text-xs font-semibold uppercase">Size</h3>
-						<div class="flex items-center gap-2">
-							{#if canSetSize(2, 2)}
+						<div class="grid grid-cols-2 gap-2">
+							{#each availableSizes as size (`${size.w}x${size.h}`)}
+								{@const selected = isCurrentSize(size.w, size.h)}
 								<button
 									type="button"
-									onclick={() => setSize(2, 2)}
-									class="border-base-200 dark:border-base-700 hover:bg-accent-500/10 flex cursor-pointer items-center justify-center rounded-lg border p-2.5"
-									aria-label="Small square"
+									class={[
+										'group flex cursor-pointer flex-col items-center gap-2 rounded-lg border p-3 transition-colors',
+										selected
+											? 'border-accent-500 bg-accent-500/10'
+											: 'border-base-200 dark:border-base-700 hover:bg-base-100 dark:hover:bg-base-800'
+									]}
+									onclick={() => setSize(size.w, size.h)}
+									aria-pressed={selected}
+									aria-label={size.label}
 								>
-									<div class="border-base-900 dark:border-base-50 size-3 rounded-sm border-2"></div>
+									<div class="flex h-8 items-center justify-center">
+										<div
+											class={[
+												'rounded-sm border-2 transition-colors',
+												size.preview,
+												selected
+													? 'border-accent-500'
+													: 'border-base-700 group-hover:border-base-900 dark:border-base-300 dark:group-hover:border-base-50'
+											]}
+										></div>
+									</div>
+									<span
+										class={[
+											'text-xs',
+											selected
+												? 'text-accent-600 dark:text-accent-400 font-medium'
+												: 'text-base-600 dark:text-base-400'
+										]}
+									>
+										{size.label}
+									</span>
 								</button>
-							{/if}
-							{#if canSetSize(4, 2)}
-								<button
-									type="button"
-									onclick={() => setSize(4, 2)}
-									class="border-base-200 dark:border-base-700 hover:bg-accent-500/10 flex cursor-pointer items-center justify-center rounded-lg border p-2.5"
-									aria-label="Wide"
-								>
-									<div
-										class="border-base-900 dark:border-base-50 h-3 w-6 rounded-sm border-2"
-									></div>
-								</button>
-							{/if}
-							{#if canSetSize(2, 4)}
-								<button
-									type="button"
-									onclick={() => setSize(2, 4)}
-									class="border-base-200 dark:border-base-700 hover:bg-accent-500/10 flex cursor-pointer items-center justify-center rounded-lg border p-2.5"
-									aria-label="Tall"
-								>
-									<div
-										class="border-base-900 dark:border-base-50 h-6 w-3 rounded-sm border-2"
-									></div>
-								</button>
-							{/if}
-							{#if canSetSize(4, 4)}
-								<button
-									type="button"
-									onclick={() => setSize(4, 4)}
-									class="border-base-200 dark:border-base-700 hover:bg-accent-500/10 flex cursor-pointer items-center justify-center rounded-lg border p-2.5"
-									aria-label="Large square"
-								>
-									<div class="border-base-900 dark:border-base-50 size-6 rounded-sm border-2"></div>
-								</button>
-							{/if}
+							{/each}
 						</div>
 					</section>
 				{/if}

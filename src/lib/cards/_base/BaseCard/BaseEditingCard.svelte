@@ -18,10 +18,7 @@
 	} from '$lib/website/context';
 	import PlainTextEditor from '$lib/components/PlainTextEditor.svelte';
 
-	let colorsChoices = [
-		{ class: 'text-base-500', label: 'base' },
-		{ class: 'text-accent-500', label: 'accent' },
-		{ class: 'text-base-300 dark:text-base-700', label: 'transparent' },
+	const customColorChoices = [
 		{ class: 'text-red-500', label: 'red' },
 		{ class: 'text-orange-500', label: 'orange' },
 		{ class: 'text-amber-500', label: 'amber' },
@@ -41,6 +38,12 @@
 		{ class: 'text-rose-500', label: 'rose' }
 	];
 
+	const specialColors = ['base', 'accent', 'transparent'] as const;
+	const colorModes = ['base', 'accent', 'transparent', 'custom'] as const;
+	type ColorMode = (typeof colorModes)[number];
+
+	let lastCustomColor = $state('rose');
+
 	export type BaseEditingCardProps = {
 		item: Item;
 		ondelete: () => void;
@@ -58,7 +61,29 @@
 		...rest
 	}: BaseEditingCardProps = $props();
 
-	let selectedColor = $derived(colorsChoices.find((c) => getColor(item) === c.label));
+	const currentColor = $derived(getColor(item));
+	const colorMode = $derived<ColorMode>(
+		(specialColors as readonly string[]).includes(currentColor)
+			? (currentColor as ColorMode)
+			: 'custom'
+	);
+	const selectedCustomColor = $derived(
+		colorMode === 'custom' ? customColorChoices.find((c) => c.label === currentColor) : undefined
+	);
+
+	function setColorMode(mode: ColorMode) {
+		if (mode === 'custom') {
+			item.color = lastCustomColor;
+			return;
+		}
+		if (colorMode === 'custom') lastCustomColor = currentColor;
+		item.color = mode;
+	}
+
+	function pickCustomColor(label: string) {
+		item.color = label;
+		lastCustomColor = label;
+	}
 
 	let canEdit = getCanEdit();
 	let isMobile = getIsMobile();
@@ -293,11 +318,11 @@
 
 			<Button
 				size="icon"
-				variant="rose"
+				variant="secondary"
 				onclick={() => {
 					ondelete();
 				}}
-				class="absolute -top-3 -left-3 hidden lg:group-focus-within:inline-flex lg:group-hover/card:inline-flex"
+				class="absolute -top-3 -left-3 hidden border-rose-500/30 bg-rose-500/15 text-rose-700 hover:bg-rose-500/25 lg:group-focus-within:inline-flex lg:group-hover/card:inline-flex dark:border-rose-500/30 dark:bg-rose-500/15 dark:text-rose-300"
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -351,18 +376,69 @@
 									</svg>
 								</button>
 							{/snippet}
-							<ColorSelect
-								selected={selectedColor}
-								colors={colorsChoices}
-								onselected={(color, previous) => {
-									if (typeof previous === 'string' || typeof color === 'string') {
-										return;
-									}
-
-									item.color = color.label;
-								}}
-								class="w-64"
-							/>
+							<div class="flex flex-col gap-2 p-1">
+								<div class="grid grid-cols-4 gap-1.5">
+									{#each colorModes as mode (mode)}
+										<button
+											type="button"
+											class={[
+												'group flex cursor-pointer flex-col items-center gap-1 rounded-lg border p-1.5 transition-colors',
+												colorMode === mode
+													? 'border-accent-500 bg-accent-500/10'
+													: 'border-base-200 dark:border-base-700 hover:bg-base-100 dark:hover:bg-base-800'
+											]}
+											onclick={() => setColorMode(mode)}
+											aria-pressed={colorMode === mode}
+										>
+											<span
+												class={[
+													'block size-5 overflow-hidden rounded-full ring-1 transition-colors',
+													colorMode === mode
+														? 'ring-accent-500'
+														: 'ring-base-300 dark:ring-base-700'
+												]}
+												style={mode === 'transparent'
+													? 'background-image: linear-gradient(45deg, #cbd5e1 25%, transparent 25%, transparent 75%, #cbd5e1 75%), linear-gradient(45deg, #cbd5e1 25%, transparent 25%, transparent 75%, #cbd5e1 75%); background-size: 6px 6px; background-position: 0 0, 3px 3px;'
+													: undefined}
+											>
+												{#if mode === 'base'}
+													<span class="bg-base-300 dark:bg-base-700 block size-full"></span>
+												{:else if mode === 'accent'}
+													<span class="bg-accent-500 block size-full"></span>
+												{:else if mode === 'custom'}
+													{@const swatchColor =
+														colorMode === 'custom' ? currentColor : lastCustomColor}
+													<span
+														class="block size-full"
+														style={`background-color: var(--color-${swatchColor}-500)`}
+													></span>
+												{/if}
+											</span>
+											<span
+												class={[
+													'text-[10px] capitalize',
+													colorMode === mode
+														? 'text-accent-600 dark:text-accent-400 font-medium'
+														: 'text-base-600 dark:text-base-400'
+												]}
+											>
+												{mode}
+											</span>
+										</button>
+									{/each}
+								</div>
+								{#if colorMode === 'custom'}
+									<ColorSelect
+										selected={selectedCustomColor}
+										colors={customColorChoices}
+										onselected={(color) => {
+											if (typeof color === 'string') return;
+											pickCustomColor(color.label);
+										}}
+										class="w-64"
+									/>
+								{/if}
+							</div>
 						</Popover>
 					{/if}
 
